@@ -1,7 +1,8 @@
 local ffi = require 'ffi'
 local ext =  jit.os == "Windows" and ".dll" or jit.os == "OSX" and ".dylib" or ".so"
-local flag, libs_dir = pcall(require, 'load_libs')
-local C = ffi.load((flag and libs_dir or '.') .. '/' .. 'libtinyfiledialogs' .. ext)
+local flag, global = pcall(require, 'global')
+local libs_dir = flag and global.libs_dir or '.'
+local C = ffi.load(libs_dir .. '/' .. 'libtinyfiledialogs' .. ext)
 
 ffi.cdef[[
 
