@@ -1,0 +1,40 @@
+language: c
+
+matrix:
+  include:
+    - os: windows
+      script:
+        - mkdir build && cd build
+        - cmake -A Win32 ..
+        - cmake --build . --config Release
+        - cd Release
+        - for f in *dll; do mv "$f" "lib$f"; done;
+        - 7z a -tzip "${TRAVIS_REPO_SLUG#*/}-windows-x86-$TRAVIS_TAG.zip" *.dll ../../src/*.lua
+    - os: windows
+      script:
+        - mkdir build && cd build
+        - cmake -A x64 ..
+        - cmake --build . --config Release
+        - cd Release
+        - for f in *dll; do mv "$f" "lib$f"; done;
+        - 7z a -tzip "${TRAVIS_REPO_SLUG#*/}-windows-x64-$TRAVIS_TAG.zip" *.dll ../../src/*.lua
+    - dist: trusty
+    - os: osx
+      osx_image: xcode6.4
+
+script:
+  - mkdir build && cd build
+  - cmake ..
+  - cmake --build .
+  - zip -j "${TRAVIS_REPO_SLUG#*/}-$TRAVIS_OS_NAME-x64-$TRAVIS_TAG.zip" ?(*.so|*.dylib) ../src/*.lua
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  on:
+    tags: true
+    branch: master
+  file_glob: true
+  file: "${TRAVIS_REPO_SLUG#*/}*.zip"
+  api_key:
+    secure: U0zl+ARaDF5iH8Dwn1lPzuBnTBF4QCjxuB79JLNtWdX2xThGs8ASotEZnrvfXI0Xw+7lDXgCclfFajvMchn9UKUyHUegg9K1KwZgsj8SGup/CYyN4xNEsdJQlreetJIfZgHwK1kGSgYOrKFcxdS+TVIirL0aFZ6r1Cn9BwLhYzO+mgp1yBYIFLgsK0GteNB+2p3VE9Y9jH3EP1xgOYIM6N6/nmuO7PmqtX9b3cm+Pc+HVcam/EBj3Rz/GEzNW9H2cp+mpqPINbl+JynRYMdw3ltLy3+1QWBuUb59ROZGE+CSx/zqxf4GT86Z7QBvsh2RywC14bE6xMdJUXtOTa4J9JYjU2FgDaWQaH8Er7MBuqm8U+4AdKx19oVdB0h15Z7E3eBvOLiFccELVY0PJ7gcSydbnnq5iHdbfQ3A5hrBo2CD/qIWwFalxplWq5T7JTVdn2cWj9V9vBiMkQOXFWkuQz7C8YzbU96y2l8T6AIpwWO/SU73wjSeagugOEFn8t7laK3ceQEhKjJeeDxsWF+zGvUWVlhaLHSWEpXoP9UsWT1M0bKVnyKZ0x+4PdBtHZ2ZPyJX/WIrmPO5I7jnEyD9Ar3+AxtU+9u90ni3m5IvXoxm3zUmaCUDDmEwK6sOLM/jEWWvz8e5wNboTRajn/0u1HPVHlBlFGY3YYA6K56o0+4=
