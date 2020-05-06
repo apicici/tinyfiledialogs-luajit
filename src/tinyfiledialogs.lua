@@ -7,29 +7,29 @@ local C = ffi.load(libs_dir .. '/' .. 'libtinyfiledialogs' .. ext)
 ffi.cdef[[
 
 char const * tinyfd_saveFileDialog(
-	char const * const aTitle ,
-	char const * const aDefaultPathAndFile ,
-	int const aNumOfFilterPatterns ,
-	char const * const * const aFilterPatterns ,
-	char const * const aSingleFilterDescription ) ;		
+    char const * const aTitle ,
+    char const * const aDefaultPathAndFile ,
+    int const aNumOfFilterPatterns ,
+    char const * const * const aFilterPatterns ,
+    char const * const aSingleFilterDescription ) ;     
 
 char const * tinyfd_openFileDialog(
-	char const * const aTitle ,
-	char const * const aDefaultPathAndFile ,
-	int const aNumOfFilterPatterns ,
-	char const * const * const aFilterPatterns ,
-	char const * const aSingleFilterDescription ,
-	int const aAllowMultipleSelects ) ;			
+    char const * const aTitle ,
+    char const * const aDefaultPathAndFile ,
+    int const aNumOfFilterPatterns ,
+    char const * const * const aFilterPatterns ,
+    char const * const aSingleFilterDescription ,
+    int const aAllowMultipleSelects ) ;         
 
 char const * tinyfd_selectFolderDialog(
-	char const * const aTitle ,
-	char const * const aDefaultPath ) ;		
+    char const * const aTitle ,
+    char const * const aDefaultPath ) ;     
 
 char const * tinyfd_colorChooser(
-	char const * const aTitle ,
-	char const * const aDefaultHexRGB ,
-	unsigned char const aDefaultRGB[3] ,
-	unsigned char aoResultRGB[3] ) ;
+    char const * const aTitle ,
+    char const * const aDefaultHexRGB ,
+    unsigned char const aDefaultRGB[3] ,
+    unsigned char aoResultRGB[3] ) ;
 ]]
 
 local tfd = {}
@@ -48,7 +48,7 @@ function tfd.openFileDialog(title, default_path_and_file, filter_patterns, singl
     num_filter_patterns = #filter_patterns
     filter_patterns = filter_patterns and ffi.new("char const*[" .. tostring(num_filter_patterns) .. "]", filter_patterns)
     local result = C.tinyfd_openFileDialog(title, default_path_and_file, num_filter_patterns, filter_patterns, single_filter_description, allow_multiple_selects)
-    if result == nil then return end
+    if result == nil then return {} end
     
     local str =  ffi.string(result)
     local t = {}
